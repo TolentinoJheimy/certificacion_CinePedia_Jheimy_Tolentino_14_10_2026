@@ -7,6 +7,7 @@ from flask_app.config.conexion_mysql import conectar_mysql
 
 class Usuario:
     @staticmethod
+    # Busca al usuario por su id; si no existe, devuelve None.
     def buscar_por_id(usuario_id):
         if usuario_id is None:
             return None
@@ -18,6 +19,7 @@ class Usuario:
         return filas[0] if filas else None
 
     @staticmethod
+    # Busca el correo para identificar al usuario.
     def buscar_por_correo(correo):
         filas = conectar_mysql().consultar(
             'SELECT * FROM usuarios WHERE correo = %s',
@@ -25,8 +27,8 @@ class Usuario:
         )
         return filas[0] if filas else None
 
-    # El correo también puede repetirse al guardar, aunque ya se haya validado.
     @staticmethod
+    # Guarda al usuario y avisa si el correo ya esta registrado.
     def crear(datos):
         try:
             return conectar_mysql().consultar(
@@ -44,14 +46,15 @@ class Usuario:
             raise
 
     @staticmethod
+    # Guarda el nuevo hash de la contraseña del usuario.
     def actualizar_contrasena(usuario_id, contrasena_hash):
         return conectar_mysql().consultar(
             'UPDATE usuarios SET contrasena_hash=%s WHERE id=%s',
             (contrasena_hash, usuario_id),
         )
 
-    # Reunimos los errores para mostrarlos juntos en el formulario.
     @staticmethod
+    # Revisa los datos del registro y reune los errores encontrados.
     def validar_registro(datos, contrasena, confirmacion):
         errores = []
 
